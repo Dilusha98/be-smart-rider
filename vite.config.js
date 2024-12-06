@@ -8,7 +8,10 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
-  base:"/vue-todo/",
+  server:{
+    port:3000,
+  },
+  // base:"/vue-todo/",
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
