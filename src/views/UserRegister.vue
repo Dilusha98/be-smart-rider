@@ -1,0 +1,105 @@
+<template>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-10">
+          <div class="card shadow-lg">
+            <div class="card-body p-5">
+              <h3 class="text-center mb-4">Create an Account</h3>
+              <form @submit.prevent="handleRegister">
+                <div class="mb-3">
+                  <label for="fullName" class="form-label">Full Name</label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    class="form-control"
+                    v-model="form.fullName"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    class="form-control"
+                    v-model="form.email"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    class="form-control"
+                    v-model="form.password"
+                    placeholder="Create a password"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="confirmPassword" class="form-label">Confirm Password</label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    class="form-control"
+                    v-model="form.confirmPassword"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                </div>
+                <div class="form-check mb-4">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="terms"
+                    v-model="form.agreeToTerms"
+                    required
+                  />
+                  <label class="form-check-label" for="terms">
+                    I agree to the <a href="#" class="text-primary">Terms and Conditions</a>.
+                  </label>
+                </div>
+                <button class="btn btn-primary w-100" type="submit">Sign Up</button>
+              </form>
+              <p class="text-center mt-3">
+                Already have an account? 
+                <router-link to="/login" class="text-primary">Login</router-link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+
+<script>
+export default {
+  data() {
+    return {
+      form: {
+        fullName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        agreeToTerms: false,
+      },
+    };
+  },
+  methods: {
+    handleRegister() {
+      if (this.form.password !== this.form.confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+
+      // Simulate form submission
+      alert('Registration successful!');
+      console.log('Form data:', this.form);
+    },
+  },
+};
+</script>

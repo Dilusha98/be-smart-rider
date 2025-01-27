@@ -52,7 +52,7 @@ const logoImage = ref(new URL('/assets/img/car-logo.png', import.meta.url).href)
                   </div>
                   <button class="btn btn-primary w-100 mt-4">Login</button>
                   <p style="font-size:small" class="text-center mt-3">
-                    Don't have an account? <a href="#" class="text-primary">Create an account</a>
+                    Don't have an account? <router-link to="/user-register" class="text-primary">Create an account</router-link>
                   </p>
                 </form>
               </div>
