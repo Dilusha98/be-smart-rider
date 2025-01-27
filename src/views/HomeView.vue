@@ -8,7 +8,7 @@ const heroTitle = ref('Drive Smarter, Ride Better');
 const heroDescription = ref(
   'Empowering Your Journey with Smart Solutions'
 );
-const heroImage = ref(new URL('/assets/img/hero-img.png', import.meta.url).href);
+const heroImage = ref(new URL('/assets/img/left-side-pic.png', import.meta.url).href);
 const logoImage = ref(new URL('/assets/img/car-logo.png', import.meta.url).href);
 </script>
 
