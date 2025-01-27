@@ -10,7 +10,7 @@ AOS.init();
 
 const heroTitle = ref('We offer modern solutions for growing your business');
 const heroDescription = ref(
-  'We are a team of talented designers making websites with Bootstrap'
+  'We are a team of talented designers making webssites with Bootstrap'
 );
 const aboutLink = ref('#about');
 const videoLink = ref('https://www.youtube.com/watch?v=Y7f98aduVJ8');
