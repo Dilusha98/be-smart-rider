@@ -11,7 +11,7 @@ export default defineConfig({
   server:{
     port:3000,
   },
-  base:"/vue-todo/",
+  base:"/be-smart-rider/",
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
