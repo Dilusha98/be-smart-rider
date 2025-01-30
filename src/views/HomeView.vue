@@ -50,7 +50,9 @@ const logoImage = ref(new URL('/assets/img/car-logo.png', import.meta.url).href)
                   <div class="d-flex justify-content-between align-items-center">
                     <a href="#" class="text-decoration-none">Forgot Password?</a>
                   </div>
-                  <button class="btn btn-primary w-100 mt-4">Login</button>
+                  <router-link to="/user-dashboard">
+                    <button class="btn btn-primary w-100 mt-4">Login</button>
+                  </router-link>
                   <p style="font-size:small" class="text-center mt-3">
                     Don't have an account? <router-link to="/user-register" class="text-primary">Create an account</router-link>
                   </p>
