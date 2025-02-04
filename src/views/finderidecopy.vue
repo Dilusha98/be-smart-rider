@@ -3,81 +3,94 @@ import { ref, onMounted } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Manually import the marker icon
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe'; 
-const map = ref(null);
-const province = ref('');
-const district = ref('');
-const city = ref('');
-const selectedLatLng = ref({ lat: 7.8731, lng: 80.7718 });
+const pickupIconImg = new URL('@/assets/img/marker-pick.png', import.meta.url).href;
+const dropoffIconImg = new URL('@/assets/img/marker-drop.png', import.meta.url).href;
 
-const getLocationDetails = async (lat, lng) => {
+const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe';
+const map = ref(null);
+
+// Separate state for pickup and dropoff
+const pickupLocation = ref({ province: '', district: '', city: '', lat: 7.8531, lng: 80.7518 });
+const dropoffLocation = ref({ province: '', district: '', city: '', lat: 7.8731, lng: 80.7718 });
+
+const getLocationDetails = async (lat, lng, type) => {
     try {
         const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`);
         const data = await response.json();
 
         if (data.results.length > 0) {
             const details = data.results[0].components;
-            
-            province.value = details.state || 'Unknown Province';
-            district.value = details.county || details.state_district || 'Unknown District';
-            city.value = details.village || details.city || details.town || 'Unknown City/Village';
+            const location = {
+                province: details.state || 'Unknown Province',
+                district: details.county || details.state_district || 'Unknown District',
+                city: details.village || details.city || details.town || 'Unknown City/Village'
+            };
+
+            if (type === 'pickup') {
+                pickupLocation.value = { ...pickupLocation.value, ...location };
+            } else if (type === 'dropoff') {
+                dropoffLocation.value = { ...dropoffLocation.value, ...location };
+            }
         }
     } catch (error) {
         console.error('Error fetching location details:', error);
     }
 };
 
-
 const initMap = () => {
-    map.value = L.map('map', { zoomControl: false }).setView([selectedLatLng.value.lat, selectedLatLng.value.lng], 10);
+    map.value = L.map('map', { zoomControl: false }).setView([pickupLocation.value.lat, pickupLocation.value.lng], 10);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map.value);
 
-    // Define custom icon
-    const customIcon = L.icon({
-        iconUrl: markerIcon,
+    const pickupIcon = L.icon({
+        iconUrl: pickupIconImg,
         shadowUrl: markerShadow,
-        iconSize: [25, 41], 
+        iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
     });
 
-    const marker = L.marker([selectedLatLng.value.lat, selectedLatLng.value.lng], {
-        draggable: true,
-        icon: customIcon // Apply custom icon
-    }).addTo(map.value);
-
-    marker.on('dragend', async (event) => {
-        const newCoords = event.target.getLatLng();
-        selectedLatLng.value = { lat: newCoords.lat, lng: newCoords.lng };
-        await getLocationDetails(newCoords.lat, newCoords.lng);
+    const dropoffIcon = L.icon({
+        iconUrl: dropoffIconImg,
+        shadowUrl: markerShadow,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
     });
 
-    // Get user's current location
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                selectedLatLng.value = { lat: position.coords.latitude, lng: position.coords.longitude };
-                map.value.setView([selectedLatLng.value.lat, selectedLatLng.value.lng], 12);
-                marker.setLatLng([selectedLatLng.value.lat, selectedLatLng.value.lng]);
-                await getLocationDetails(selectedLatLng.value.lat, selectedLatLng.value.lng);
-            },
-            (error) => console.warn('Geolocation not allowed or failed', error),
-            { enableHighAccuracy: true }
-        );
-    }
+    const pickupMarker = L.marker([pickupLocation.value.lat, pickupLocation.value.lng], {
+        draggable: true,
+        icon: pickupIcon
+    }).addTo(map.value).bindPopup('Pick-up Location');
+
+    const dropoffMarker = L.marker([dropoffLocation.value.lat, dropoffLocation.value.lng], {
+        draggable: true,
+        icon: dropoffIcon
+    }).addTo(map.value).bindPopup('Drop-off Location');
+
+    pickupMarker.on('dragend', async (event) => {
+        const newCoords = event.target.getLatLng();
+        pickupLocation.value.lat = newCoords.lat;
+        pickupLocation.value.lng = newCoords.lng;
+        await getLocationDetails(newCoords.lat, newCoords.lng, 'pickup');
+    });
+
+    dropoffMarker.on('dragend', async (event) => {
+        const newCoords = event.target.getLatLng();
+        dropoffLocation.value.lat = newCoords.lat;
+        dropoffLocation.value.lng = newCoords.lng;
+        await getLocationDetails(newCoords.lat, newCoords.lng, 'dropoff');
+    });
 };
 
 onMounted(initMap);
 </script>
-
 
 <template>
     <div class="container">
@@ -86,9 +99,11 @@ onMounted(initMap);
         <div id="map" class="map-container"></div>
 
         <div class="location-info">
-            <p><strong>Province:</strong> {{ province }}</p>
-            <p><strong>District:</strong> {{ district }}</p>
-            <p><strong>City/Village:</strong> {{ city }}</p>
+            <h2>Pick-up Location:</h2>
+            <span>{{ pickupLocation.province }} - {{ pickupLocation.district }} - {{ pickupLocation.city }}</span>
+
+            <h2>Drop-off Location:</h2>
+            <span>{{ dropoffLocation.province }} - {{ dropoffLocation.district }} - {{ dropoffLocation.city }}</span>
         </div>
     </div>
 </template>

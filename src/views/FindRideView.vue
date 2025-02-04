@@ -3,9 +3,15 @@ import { ref, onMounted } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import pickupIconImg from 'leaflet/dist/images/marker-pick.png';
-import dropoffIconImg from 'leaflet/dist/images/marker-drop.png';
+// import pickupIconImg from 'leaflet/dist/images/marker-pick.png';
+// import dropoffIconImg from 'leaflet/dist/images/marker-drop.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// const pickupIconImg = ref(new URL('/assets/img/user-side/marker-pick.png', import.meta.url).href);
+// const dropoffIconImg = ref(new URL('/assets/img/user-side/marker-drop.png', import.meta.url).href);
+
+import pickupIconImg from '/assets/img/user-side/marker-pick.png';
+import dropoffIconImg from '/assets/img/user-side/marker-drop.png';
 
 const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe';
 const map = ref(null);
@@ -48,19 +54,19 @@ const initMap = () => {
     const pickupIcon = L.icon({
         iconUrl: pickupIconImg,
         shadowUrl: markerShadow,
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+        iconSize: [30, 45],
+        iconAnchor: [15, 45],
+        popupAnchor: [0, -40],
+        shadowSize: [50, 50]
     });
 
     const dropoffIcon = L.icon({
         iconUrl: dropoffIconImg,
         shadowUrl: markerShadow,
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+        iconSize: [30, 45],
+        iconAnchor: [15, 45],
+        popupAnchor: [0, -40],
+        shadowSize: [50, 50]
     });
 
     const pickupMarker = L.marker([pickupLocation.value.lat, pickupLocation.value.lng], {
