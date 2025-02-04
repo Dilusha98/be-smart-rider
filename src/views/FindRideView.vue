@@ -39,7 +39,7 @@ const initMap = () => {
         await getLocationDetails(newCoords.lat, newCoords.lng);
     });
 
-    // Get user's current location
+    // Get user's current location to view
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
@@ -59,7 +59,11 @@ onMounted(initMap);
 
 <template>
     <div class="container">
-        <h1>Find a Ride</h1>
+        <!-- <h1>Find a Ride</h1> -->
+
+
+
+        
 
         <div id="map" class="map-container"></div>
 
