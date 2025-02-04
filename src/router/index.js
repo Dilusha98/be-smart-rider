@@ -1,4 +1,4 @@
-import { createRouter , createWebHistory  } from "vue-router";
+import { createRouter , createWebHistory ,createWebHashHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import FindRideView from "@/views/FindRideView.vue";
 import UserRegister from "@/views/UserRegister.vue";
@@ -6,7 +6,7 @@ import UserHome from "@/views/UserHome.vue";
 import OfferRide from "@/views/OfferRide.vue";
 
 const router = createRouter({
-    history:createWebHistory (import.meta.env.BASE_URL),
+    history:createWebHashHistory (import.meta.env.BASE_URL),
     routes:[
         { path:'/', name:'home', component:HomeView},
         { path:'/find-ride', name:'findride', component:FindRideView},
