@@ -9,6 +9,7 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe'; 
 const map = ref(null);
+const province = ref('');
 const district = ref('');
 const city = ref('');
 const selectedLatLng = ref({ lat: 7.8731, lng: 80.7718 });
@@ -20,13 +21,16 @@ const getLocationDetails = async (lat, lng) => {
 
         if (data.results.length > 0) {
             const details = data.results[0].components;
-            district.value = details.state || 'Unknown District';
+            
+            province.value = details.state || 'Unknown Province';
+            district.value = details.county || details.state_district || 'Unknown District';
             city.value = details.village || details.city || details.town || 'Unknown City/Village';
         }
     } catch (error) {
         console.error('Error fetching location details:', error);
     }
 };
+
 
 const initMap = () => {
     map.value = L.map('map', { zoomControl: false }).setView([selectedLatLng.value.lat, selectedLatLng.value.lng], 10);
@@ -82,6 +86,7 @@ onMounted(initMap);
         <div id="map" class="map-container"></div>
 
         <div class="location-info">
+            <p><strong>Province:</strong> {{ province }}</p>
             <p><strong>District:</strong> {{ district }}</p>
             <p><strong>City/Village:</strong> {{ city }}</p>
         </div>
