@@ -3,7 +3,11 @@ import { ref, onMounted } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe';
+// Manually import the marker icon
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe'; 
 const map = ref(null);
 const district = ref('');
 const city = ref('');
@@ -31,7 +35,20 @@ const initMap = () => {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map.value);
 
-    const marker = L.marker([selectedLatLng.value.lat, selectedLatLng.value.lng], { draggable: true }).addTo(map.value);
+    // Define custom icon
+    const customIcon = L.icon({
+        iconUrl: markerIcon,
+        shadowUrl: markerShadow,
+        iconSize: [25, 41], 
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+
+    const marker = L.marker([selectedLatLng.value.lat, selectedLatLng.value.lng], {
+        draggable: true,
+        icon: customIcon // Apply custom icon
+    }).addTo(map.value);
 
     marker.on('dragend', async (event) => {
         const newCoords = event.target.getLatLng();
@@ -39,7 +56,7 @@ const initMap = () => {
         await getLocationDetails(newCoords.lat, newCoords.lng);
     });
 
-    // Get user's current location to view
+    // Get user's current location
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
@@ -57,13 +74,10 @@ const initMap = () => {
 onMounted(initMap);
 </script>
 
+
 <template>
     <div class="container">
-        <!-- <h1>Find a Ride</h1> -->
-
-
-
-        
+        <h1>Find a Ride</h1>
 
         <div id="map" class="map-container"></div>
 
