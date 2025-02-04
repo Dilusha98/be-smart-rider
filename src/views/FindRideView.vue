@@ -1,11 +1,99 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe'; // Replace with your OpenCage API key
+const map = ref(null);
+const district = ref('');
+const city = ref('');
+const selectedLatLng = ref({ lat: 7.8731, lng: 80.7718 }); // Default to Sri Lanka center
+
+const getLocationDetails = async (lat, lng) => {
+    try {
+        const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`);
+        const data = await response.json();
+
+        if (data.results.length > 0) {
+            const details = data.results[0].components;
+            district.value = details.state || 'Unknown District';
+            city.value = details.village || details.city || details.town || 'Unknown City/Village';
+        }
+    } catch (error) {
+        console.error('Error fetching location details:', error);
+    }
+};
+
+const initMap = () => {
+    map.value = L.map('map', { zoomControl: false }).setView([selectedLatLng.value.lat, selectedLatLng.value.lng], 10);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map.value);
+
+    const marker = L.marker([selectedLatLng.value.lat, selectedLatLng.value.lng], { draggable: true }).addTo(map.value);
+
+    marker.on('dragend', async (event) => {
+        const newCoords = event.target.getLatLng();
+        selectedLatLng.value = { lat: newCoords.lat, lng: newCoords.lng };
+        await getLocationDetails(newCoords.lat, newCoords.lng);
+    });
+
+    // Get user's current location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                selectedLatLng.value = { lat: position.coords.latitude, lng: position.coords.longitude };
+                map.value.setView([selectedLatLng.value.lat, selectedLatLng.value.lng], 12);
+                marker.setLatLng([selectedLatLng.value.lat, selectedLatLng.value.lng]);
+                await getLocationDetails(selectedLatLng.value.lat, selectedLatLng.value.lng);
+            },
+            (error) => console.warn('Geolocation not allowed or failed', error),
+            { enableHighAccuracy: true }
+        );
+    }
+};
+
+onMounted(initMap);
+</script>
 
 <template>
-    <div>
+    <div class="container">
         <h1>Find a Ride</h1>
-        <h1>Find a Ride</h1>
-        <h1>Find a Ride</h1>
-        <h1>Find a Ride</h1>
-        <h1>Find a Ride</h1>
+
+        <div id="map" class="map-container"></div>
+
+        <div class="location-info">
+            <p><strong>District:</strong> {{ district }}</p>
+            <p><strong>City/Village:</strong> {{ city }}</p>
+        </div>
     </div>
 </template>
+
+<style scoped>
+.container {
+    text-align: center;
+    padding: 10px;
+}
+
+.map-container {
+    width: 100%;
+    height: 400px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.location-info {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .map-container {
+        height: 300px;
+    }
+}
+</style>
