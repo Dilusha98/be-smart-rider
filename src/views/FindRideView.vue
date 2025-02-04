@@ -3,11 +3,11 @@ import { ref, onMounted } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe'; // Replace with your OpenCage API key
+const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe';
 const map = ref(null);
 const district = ref('');
 const city = ref('');
-const selectedLatLng = ref({ lat: 7.8731, lng: 80.7718 }); // Default to Sri Lanka center
+const selectedLatLng = ref({ lat: 7.8731, lng: 80.7718 });
 
 const getLocationDetails = async (lat, lng) => {
     try {
