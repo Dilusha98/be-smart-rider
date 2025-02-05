@@ -19,13 +19,13 @@ const cards = ref([
     image: "./assets/img/user-side/registerCar.png",
     title: "Register Vehicle",
     description: "List your car. Start earning.",
-    url: "/",
+    url: "/register-vehicle",
   },
   {
     image: "./assets/img/user-side/RideHistory.png",
     title: "My Rides",
     description: "Track your past and upcoming trips",
-    url: "/",
+    url: "/my-rides",
   },
 ]);
 </script>

@@ -3,18 +3,13 @@ import { ref, onMounted } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// import pickupIconImg from 'leaflet/dist/images/marker-pick.png';
-// import dropoffIconImg from 'leaflet/dist/images/marker-drop.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
-// const pickupIconImg = ref(new URL('/assets/img/user-side/marker-pick.png', import.meta.url).href);
-// const dropoffIconImg = ref(new URL('/assets/img/user-side/marker-drop.png', import.meta.url).href);
-
 import pickupIconImg from '/assets/img/user-side/marker-pick.png';
 import dropoffIconImg from '/assets/img/user-side/marker-drop.png';
 
 const apiKey = '9d27823c14f4462cb49d23f11f9ca0fe';
 const map = ref(null);
+const selectedDate = ref('');
 
 // Separate state for pickup and dropoff
 const pickupLocation = ref({ province: '', district: '', city: '', lat: 7.8531, lng: 80.7518 });
@@ -94,12 +89,40 @@ const initMap = () => {
     });
 };
 
+const handleSubmit = async () => {
+    const requestData = {
+        date: selectedDate.value,
+        pickup: pickupLocation.value,
+        dropoff: dropoffLocation.value
+    };
+
+    try {
+        const response = await fetch('https://api.example.com/submit-ride', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        const result = await response.json();
+        console.log('Ride Submitted:', result);
+    } catch (error) {
+        console.error('Error submitting ride:', error);
+    }
+};
+
 onMounted(initMap);
 </script>
 
 <template>
     <div class="container">
-        <h1>Find a Ride</h1>
+        <h3>Find a Ride</h3>
+
+        <div class="date-selector">
+            <label for="date" class="date-label">Select Date:</label>
+            <input type="date" id="date" v-model="selectedDate" class="date-input" />
+        </div>
 
         <div id="map" class="map-container"></div>
 
@@ -110,13 +133,43 @@ onMounted(initMap);
             <h2>Drop-off Location:</h2>
             <span>{{ dropoffLocation.province }} - {{ dropoffLocation.district }} - {{ dropoffLocation.city }}</span>
         </div>
+
+        <button @click="handleSubmit" class="submit-btn">Search Ride</button>
     </div>
 </template>
 
 <style scoped>
+
 .container {
     text-align: center;
     padding: 10px;
+}
+
+.date-selector {
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-label {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.date-input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.date-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 .map-container {
@@ -132,11 +185,40 @@ onMounted(initMap);
     border-radius: 8px;
     margin-top: 10px;
     font-size: 16px;
+    text-align: left;
+}
+
+.submit-btn {
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #012970;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
 }
 
 @media (max-width: 768px) {
     .map-container {
         height: 300px;
+    }
+    .date-selector {
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
+    }
+    .date-input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .date-label {
+        font-size: 14px;
+        margin-left: 5px;
     }
 }
 </style>
