@@ -112,7 +112,37 @@ const handleSubmit = async () => {
     }
 };
 
-onMounted(initMap);
+// onMounted(initMap);
+
+onMounted(() => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            pickupLocation.value.lat = userLat;
+            pickupLocation.value.lng = userLng;
+
+            dropoffLocation.value.lat = userLat + 0.045;
+            dropoffLocation.value.lng = userLng;
+
+            // Fetch Address Details
+            await getLocationDetails(userLat, userLng, 'pickup');
+            await getLocationDetails(dropoffLocation.value.lat, dropoffLocation.value.lng, 'dropoff');
+
+            // Initialize the map
+            initMap();
+        }, (error) => {
+            console.error('Error getting location:', error);
+            // Fallback to default location if geolocation fails
+            initMap();
+        });
+    } else {
+        console.error('Geolocation is not supported by this browser.');
+        initMap();
+    }
+});
+
 </script>
 
 <template>
