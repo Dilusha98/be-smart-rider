@@ -6,6 +6,8 @@ import config from '@/config';
 import { computed } from 'vue';
 
 const token = localStorage.getItem("authToken");
+console.log(token);
+
 const user = JSON.parse(localStorage.getItem("user"));
 const userType = user?.user_type;
 
