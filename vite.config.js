@@ -11,7 +11,8 @@ export default defineConfig({
   server:{
     port:3000,
   },
-  base:"/be-smart-rider/",
+  // base:"/be-smart-rider/",
+  base:"/",
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
