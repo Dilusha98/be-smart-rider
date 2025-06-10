@@ -1,0 +1,26 @@
+/* Ensure Toastr aligns properly on small screens */
+@media (max-width: 600px) {
+    .Toastify__toast-container {
+      top: 10px !important;
+      right: 10px !important;  /* Ensures it aligns to the right */
+      left: auto !important;  /* Prevents left alignment */
+      width: fit-content !important; /* Adjust width to content */
+    }
+  
+    .Toastify__toast {
+      font-size: 14px !important;
+      max-width: 300px !important; /* Ensures width fits the content */
+      padding: 10px !important;
+      text-align: center !important;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2) !important; /* Improves appearance */
+    }
+  
+    .Toastify__toast-body {
+      font-size: 13px !important; /* Adjust text size */
+    }
+  
+    .Toastify__close-button {
+      font-size: 12px !important; /* Adjust close button size */
+    }
+  }
+  

@@ -7,7 +7,7 @@
 
 <template>
   <Navbar></Navbar>
-  <div class="content">
+  <div class="content" >
     <RouterView />
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup>
-import { ref} from "vue";
+import { ref } from "vue";
+import {onMounted  } from 'vue';
 import Card from "../components/UserHomeCard.vue";
 
 const cards = ref([
@@ -27,7 +28,20 @@ const cards = ref([
     description: "Track your past and upcoming trips",
     url: "/my-rides",
   },
+  {
+    image: "./assets/img/user-side/user_verification.png",
+    title: "User Verification",
+    description: "Verify your identity to unlock full features",
+    url: "/user-verification",
+  },
 ]);
+
+onMounted(() => {
+  if (localStorage.getItem("justLoggedIn") === "true") {
+    localStorage.removeItem("justLoggedIn");
+    window.location.reload();
+  }
+});
 </script>
 
 <template>

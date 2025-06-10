@@ -1,6 +1,12 @@
 <script setup>
 import { reactive,ref } from "vue";
+import { useRouter } from 'vue-router';
+import axios from "axios";
+import config from "@/config";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
+const router = useRouter();
 const logoImage = ref(new URL('/assets/img/car-logo.png', import.meta.url).href);
 
 const form = reactive({
@@ -8,17 +14,92 @@ const form = reactive({
   email: "",
   password: "",
   confirmPassword: "",
+  gender: "",
+  userType: "",
   agreeToTerms: false,
 });
 
-const handleRegister = () => {
-  if (form.password !== form.confirmPassword) {
-    alert("Passwords do not match!");
+// Function to handle registration
+const handleRegister = async () => {
+
+  if (!form.fullName || !form.email) {
+    toast.error("Please fill name and email", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
     return;
   }
 
-    alert("Registration successful!");
-    console.log("Form data:", form);
+  if (!form.password || !form.confirmPassword) {
+    toast.error("Please fill password and confirm!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
+    return;
+  }
+
+  if (form.password !== form.confirmPassword) {
+    toast.error("Password and confirm password do not match!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
+    return;
+  }
+
+  if (!form.gender) {
+    toast.error("Please select your gender.", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
+    return;
+  }
+
+  if (!form.userType) {
+    toast.error("Please select your user type.", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
+    return;
+  }
+
+
+  try {
+    const response = await axios.post(`${config.API_BASE_URL}/appuser/register`, {
+      name: form.fullName,
+      email: form.email,
+      password: form.password,
+      password_confirmation: form.confirmPassword,
+      gender: form.gender,
+      user_type: form.userType,
+    });
+
+    sessionStorage.setItem("success", response.data.message);
+
+    if (response.data.success == true) {
+      router.push("/");
+    }
+    
+
+  } catch (error) {
+    if (error.response) {
+      toast.error(error.response.data.message || "Registration failed. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+    } else {
+      toast.error("Network error. Please check your connection.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+    }
+  }
 };
 </script>
 
@@ -49,6 +130,23 @@ const handleRegister = () => {
                   <div class="mb-3">
                     <label for="confirmPassword" class="form-label">Confirm Password</label>
                     <input type="password" id="confirmPassword" class="form-control" v-model="form.confirmPassword" placeholder="Confirm your password" required />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Gender</label>
+                    <select class="form-select" v-model="form.gender" required>
+                      <option disabled value="">Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">User Type</label>
+                    <select class="form-select" v-model="form.userType" required>
+                      <option disabled value="">User type</option>
+                      <option value="student">University Student</option>
+                      <option value="professional">Working Professional</option>
+                    </select>
                   </div>
                   <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" id="terms" v-model="form.agreeToTerms" required/>

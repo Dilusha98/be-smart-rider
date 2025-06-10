@@ -1,81 +1,91 @@
 <script setup>
-  import { ref} from "vue";
+import { useRouter } from 'vue-router';
+import { computed } from 'vue';
+import Swal from 'sweetalert2';
 
-  const logoImage = ref(new URL('/assets/img/car-logo.png', import.meta.url).href);
+const router = useRouter();
+const isLoggedIn = computed(() => !!localStorage.getItem("authToken"));
+
+const logout = () => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to logout?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#012970',
+    cancelButtonColor: '#aaa',
+    confirmButtonText: 'Yes, logout',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("verification_status");
+      localStorage.setItem("justLoggedOut", "true"); // optional
+      router.push('/');
+      setTimeout(() => window.location.reload(), 100); // refresh after redirect
+    }
+  });
+};
 </script>
 
+
+
 <template>
-  <header id="header" class="header d-flex align-items-center fixed-top">
-    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+  <header class="header fixed-top">
+    <div class="navbar-container d-flex align-items-center justify-content-between">
 
-      <router-link to="/user-dashboard"><a href="index.html" class="logo d-flex align-items-center me-auto">
-        <h1 class="sitename">Smart Ride</h1>
-        <img :src="logoImage" alt="" id="navLogo">
-      </a></router-link>
+      <div v-if="isLoggedIn" class="logout-icon-wrapper" @click="logout">
+        <i class="fas fa-sign-out-alt logout-icon" title="Logout"></i>
+      </div>
 
-      <!-- <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="#hero" class="active">Home<br></a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li>
-          <li class="listing-dropdown"><a href="#"><span>Listing Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li>
-                <a href="#">Column 1 link 1</a>
-                <a href="#">Column 1 link 2</a>
-                <a href="#">Column 1 link 3</a>
-              </li>
-              <li>
-                <a href="#">Column 2 link 1</a>
-                <a href="#">Column 2 link 2</a>
-                <a href="#">Column 3 link 3</a>
-              </li>
-              <li>
-                <a href="#">Column 3 link 1</a>
-                <a href="#">Column 3 link 2</a>
-                <a href="#">Column 3 link 3</a>
-              </li>
-              <li>
-                <a href="#">Column 4 link 1</a>
-                <a href="#">Column 4 link 2</a>
-                <a href="#">Column 4 link 3</a>
-              </li>
-              <li>
-                <a href="#">Column 5 link 1</a>
-                <a href="#">Column 5 link 2</a>
-                <a href="#">Column 5 link 3</a>
-              </li>
-            </ul>
-          </li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav> -->
+      <router-link to="/user-dashboard" class="logo d-flex align-items-center">
+        <img src="/assets/img/car-logo.png" alt="Logo" class="logo-img" />
+        <h5 class="brand-name">Smart Ride</h5>
+      </router-link>
 
     </div>
   </header>
-  </template>
+</template>
+
 
 <style scoped>
-  #navLogo{
-    width:60px;
-  }
+.header {
+  background-color: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout-icon-wrapper {
+  cursor: pointer;
+}
+
+.logout-icon {
+  font-size: 24px;
+  color: #012970;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-img {
+  width: 40px;
+  margin-right: 8px;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #012970;
+  margin: 0;
+}
 </style>
-  

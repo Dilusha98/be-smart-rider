@@ -1,8 +1,25 @@
 <script setup>
-import { ref } from 'vue';
+import { reactive,ref,onMounted  } from 'vue';
+import { toast } from "vue3-toastify";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import "vue3-toastify/dist/index.css";
+import "@/assets/toast-styles.css";
 import 'aos/dist/aos.css';
 import AOS from 'aos';
+import config from "@/config";
 AOS.init();
+
+const router = useRouter();
+
+const form = reactive({
+  email:"",
+  password:""
+});
+
+const email = ref("");
+const password = ref("");
+const loading = ref(false);
 
 const heroTitle = ref('Drive Smarter, Ride Better');
 const heroDescription = ref(
@@ -10,6 +27,72 @@ const heroDescription = ref(
 );
 const heroImage = ref(new URL('/assets/img/left-side-pic.png', import.meta.url).href);
 const logoImage = ref(new URL('/assets/img/car-logo.png', import.meta.url).href);
+const successMessage = ref(null);
+const errorMessage = ref(null);
+
+onMounted(() => {
+
+  successMessage.value = sessionStorage.getItem("success");
+  errorMessage.value = sessionStorage.getItem("error");
+
+  // Check if successMessage exists and is not empty/null
+  if (successMessage.value && successMessage.value !== "null" && successMessage.value.trim() !== "") {
+    toast.success(successMessage.value, {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
+  }
+
+  // Check if errorMessage exists and is not empty/null
+  if (errorMessage.value && errorMessage.value !== "null" && errorMessage.value.trim() !== "") {
+    toast.error(errorMessage.value, {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored"
+    });
+  }
+
+  sessionStorage.removeItem("success");
+  sessionStorage.removeItem("error");
+});
+
+
+
+const handleLogin = async () => {
+  
+  if (!form.email || !form.password) {
+    toast.error("Please enter a valid username and password!", { position: "top-right", autoClose: 3000 });
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${config.API_BASE_URL}/appuser/login`, {
+      email: form.email,
+      password: form.password,
+    });
+
+    localStorage.setItem("authToken", response.data.access_token);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
+    localStorage.setItem("verification_status", JSON.stringify(response.data.verification_status));
+    localStorage.setItem("justLoggedIn", "true"); 
+
+    toast.success("Login successful!", { position: "top-right", autoClose: 3000 });
+
+    setTimeout(() => {
+      router.push("/user-dashboard");
+    }, 2000);
+    
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Login failed. Please try again.", {
+      position: "top-right",
+      autoClose: 3000,
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
 </script>
 
 <template>
@@ -38,21 +121,21 @@ const logoImage = ref(new URL('/assets/img/car-logo.png', import.meta.url).href)
                 </div>
   
                 <!-- Login Form -->
-                <form>
+                <form @submit.prevent="handleLogin">
                   <div class="mb-3">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input type="email" id="email" class="form-control" placeholder="Enter your email" required/>
+                    <label for="email" class="form-label">Email / Username</label>
+                    <input type="email" id="email" class="form-control" v-model="form.email" placeholder="Enter your email" required/>
                   </div>
                   <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" class="form-control" placeholder="Enter your password" required/>
+                    <input type="password" id="password" class="form-control"  v-model="form.password" placeholder="Enter your password" required/>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
                     <a href="#" class="text-decoration-none">Forgot Password?</a>
                   </div>
-                  <router-link to="/user-dashboard">
-                    <button class="btn btn-primary w-100 mt-4">Login</button>
-                  </router-link>
+                  <button :disabled="loading" class="btn btn-primary w-100 mt-4">
+                    {{ loading ? "Logging in..." : "Login" }}
+                  </button>
                   <p style="font-size:small" class="text-center mt-3">
                     Don't have an account? <router-link to="/user-register" class="text-primary">Create an account</router-link>
                   </p>
