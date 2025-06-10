@@ -1,7 +1,3 @@
-document.addEventListener('DOMContentLoaded', function () {
-  (function() {
-    "use strict";
-
 /**
 * Template Name: FlexStart
 * Template URL: https://bootstrapmade.com/flexstart-bootstrap-startup-template/
@@ -212,8 +208,3 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('scroll', navmenuScrollspy);
 
 })();
-
-  })();
-});
-
-
