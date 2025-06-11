@@ -6,6 +6,9 @@
 * License: https://bootstrapmade.com/license/
 */
 
+window.onload = function() {
+
+  
 (function() {
   "use strict";
 
@@ -208,3 +211,7 @@
   document.addEventListener('scroll', navmenuScrollspy);
 
 })();
+
+}
+
+
